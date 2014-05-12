@@ -18,8 +18,10 @@ func run(input io.Reader) string {
 	outputs := []string{}
 	b, _ := ioutil.ReadAll(input)
 	lines := strings.Split(strings.TrimSpace(string(b)), "\n")
-	for _, _ = range lines {
-		// Logic goes here
+	testCases, _ := strconv.Atoi(lines[0])
+	fmt.Println(testCases)
+	for _, l := range lines[1:] {
+		fmt.Println(l)
 	}
 	return strings.Join(outputs, "\n")
 }
