@@ -35,3 +35,11 @@ func parseInts(input string) []int {
 	}
 	return ints
 }
+
+func intstoa(ints []int, delim string) string {
+	s := make([]string, len(ints))
+	for k, i := range ints {
+		s[k] = strconv.Itoa(i)
+	}
+	return strings.Join(s, delim)
+}
