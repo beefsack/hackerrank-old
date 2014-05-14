@@ -18,14 +18,25 @@ func run(input io.Reader) string {
 	b, _ := ioutil.ReadAll(input)
 	lines := strings.Split(strings.TrimSpace(string(b)), "\n")
 	nums := parseInts(lines[1])
+	numLen := len(nums)
 
-	highest := 0
-	for i := 0; i < len(nums); i++ {
-		pm := pmean(nums, i, len(nums))
-		if i == 0 || pm > highest {
-			highest = pm
+	var pmean, sum int
+	// First pass, initial pmean and calc sum
+	for k, n := range nums {
+		pmean += (k + 1) * n
+		sum += n
+	}
+
+	// Assuming each rotation reduces all by sum and increases the weight of
+	// numLen
+	highest := pmean
+	for i := 0; i < numLen; i++ {
+		pmean += sum - nums[numLen-i-1]*numLen
+		if pmean > highest {
+			highest = pmean
 		}
 	}
+
 	return strconv.Itoa(highest)
 }
 
@@ -45,40 +56,4 @@ func intstoa(ints []int, delim string) string {
 		s[k] = strconv.Itoa(i)
 	}
 	return strings.Join(s, delim)
-}
-
-var pmeanCache = map[int]map[int]int{}
-
-func pmean(nums []int, start, length int) (mean int) {
-	if length == 1 {
-		return at(nums, start)
-	}
-	if pmeanCache[start] == nil {
-		pmeanCache[start] = map[int]int{}
-	}
-	if _, ok := pmeanCache[start][length]; !ok {
-		pmeanCache[start][length] =
-			blockSum(nums, start, length) + pmean(nums, start+1, length-1)
-	}
-	return pmeanCache[start][length]
-}
-
-var blockSumCache = map[int]map[int]int{}
-
-func blockSum(nums []int, start, length int) (sum int) {
-	if length == 1 {
-		return at(nums, start)
-	}
-	if blockSumCache[start] == nil {
-		blockSumCache[start] = map[int]int{}
-	}
-	if _, ok := blockSumCache[start][length]; !ok {
-		blockSumCache[start][length] =
-			at(nums, start) + blockSum(nums, start+1, length-1)
-	}
-	return blockSumCache[start][length]
-}
-
-func at(nums []int, start int) int {
-	return nums[start%len(nums)]
 }
